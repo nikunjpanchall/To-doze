@@ -13,7 +13,10 @@ class AppTheme {
   );
   static ButtonStyle buttonStyle = ElevatedButton.styleFrom(
     backgroundColor: Colors.black,
-    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    minimumSize: const Size(400, 50),
     textStyle: const TextStyle(
       fontSize: 30,
       fontWeight: FontWeight.bold,
