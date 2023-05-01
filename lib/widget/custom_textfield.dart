@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatelessWidget {
   CustomTextField({
     super.key,
-    required this.emailController,
+    required this.controller,
     required this.labletxt,
     this.validator,
     required this.obscure,
   });
 
-  final TextEditingController emailController;
+  final TextEditingController controller;
   final String labletxt;
   FormFieldValidator<String>? validator;
   bool obscure = false;
@@ -20,7 +20,7 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscure,
       validator: validator,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      controller: emailController,
+      controller: controller,
       decoration: InputDecoration(
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(

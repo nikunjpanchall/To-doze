@@ -41,6 +41,7 @@ dependencies:
   flutter_bloc: ^8.1.2
   google_sign_in: ^6.0.2
   flutter_svg: ^2.0.5
+  flutter_slidable: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -80,18 +81,16 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-  - family: OpenSans
+  - family: Montserrat
     fonts:
-      - asset: assets/fonts/OpenSans/OpenSans-Regular.ttf
-  - family: OpenSans-Bold
+      - asset: assets/fonts/montserrat/Montserrat-Regular.ttf
+  - family: Montserrat-Bold
     fonts:
-      - asset: assets/fonts/OpenSans/OpenSans-Bold.ttf
-  - family: OpenSans-Light
+      - asset: assets/fonts/montserrat/Montserrat-SemiBold.ttf
+  - family: Montserrat-Light
     fonts:
-      - asset: assets/fonts/OpenSans/OpenSans-Light.ttf
-  - family: OpenSans-Medium
-    fonts:
-      - asset: assets/fonts/OpenSans/OpenSans-Medium.ttf
+      - asset: assets/fonts/montserrat/Montserrat-Light.ttf
+
 
   #         style: italic
   #   - family: Trajan Pro

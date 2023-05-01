@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class Authentication {
-  final auth = FirebaseAuth.instance;
-  final googleSignIn = GoogleSignIn();
+  static final auth = FirebaseAuth.instance;
+  static final googleSignIn = GoogleSignIn();
 
   Future<void> SigninWithEmailAndPassword(
       {required String email, required String password}) async {
@@ -12,7 +12,10 @@ class Authentication {
   }
 
   Future<void> SignupWithEmailAndPassword(
-      {String? name, required String email, required String password}) async {
+      {String? name,
+      required String email,
+      required String password,
+      String? userId}) async {
     try {
       await auth
           .createUserWithEmailAndPassword(email: email, password: password)
@@ -21,7 +24,7 @@ class Authentication {
                 .collection("users")
                 .doc(value.user?.uid)
                 .set(
-              {"email": email, "name": name},
+              {"email": email, "name": name, "userId": value.user?.uid},
             ),
           );
     } catch (e) {
@@ -45,10 +48,13 @@ class Authentication {
               await FirebaseFirestore.instance
                   .collection("users")
                   .doc(user.uid)
-                  .set({
-                "email": user.email,
-                "name": user.displayName,
-              });
+                  .set(
+                {
+                  "email": user.email,
+                  "name": user.displayName,
+                  "userId": user.uid
+                },
+              );
             }
           }
         }

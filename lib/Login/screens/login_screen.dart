@@ -71,13 +71,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         Text(
                           "Lets help you to do your task",
-                          style: AppTheme.bodyText,
+                          style: AppTheme.subtitleText,
                         ),
                         SizedBox(
                           height: AppConstants.height,
                         ),
                         CustomTextField(
-                          emailController: emailController,
+                          controller: emailController,
                           labletxt: 'Email',
                           validator: (value) {
                             return Utils.validateEmail(value ?? '');
@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: AppConstants.height,
                         ),
                         CustomTextField(
-                          emailController: passwordController,
+                          controller: passwordController,
                           labletxt: 'Password',
                           obscure: true,
                         ),
@@ -111,9 +111,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? const CircularProgressIndicator(
                                   color: Colors.white,
                                 )
-                              : Text(
+                              : const Text(
                                   "Login",
-                                  style: AppTheme.bodyText,
                                 ),
                         ),
                         SizedBox(
@@ -121,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         Text(
                           "OR",
-                          style: AppTheme.bodyText,
+                          style: AppTheme.subtitleText,
                         ),
                         SizedBox(
                           height: AppConstants.height,
@@ -137,9 +136,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? const CircularProgressIndicator(
                                   color: Colors.white,
                                 )
-                              : Text(
+                              : const Text(
                                   "Sign In With Google",
-                                  style: AppTheme.bodyText,
                                 ),
                         ),
                         SizedBox(
@@ -158,8 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                               child: Text(
                                 "Signup here",
-                                style: AppTheme.bodyText
-                                    .copyWith(fontWeight: FontWeight.bold),
+                                style: AppTheme.subtitleText,
                               ),
                             ),
                           ],
