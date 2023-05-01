@@ -65,13 +65,13 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                           Text(
                             "Signup To Get Started",
-                            style: AppTheme.bodyText,
+                            style: AppTheme.subtitleText,
                           ),
                           SizedBox(
                             height: AppConstants.height,
                           ),
                           CustomTextField(
-                            emailController: nameController,
+                            controller: nameController,
                             labletxt: 'Name',
                             obscure: false,
                           ),
@@ -79,7 +79,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             height: AppConstants.height,
                           ),
                           CustomTextField(
-                            emailController: emailController,
+                            controller: emailController,
                             labletxt: 'Email',
                             validator: (value) {
                               return Utils.validateEmail(value ?? '');
@@ -90,7 +90,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             height: AppConstants.height,
                           ),
                           CustomTextField(
-                            emailController: passwordController,
+                            controller: passwordController,
                             labletxt: 'Password',
                             obscure: true,
                           ),
@@ -111,9 +111,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             },
                             child: state is UserStateSignup && state.isLoading
                                 ? const CircularProgressIndicator()
-                                : Text(
+                                : const Text(
                                     "SignUp",
-                                    style: AppTheme.bodyText,
                                   ),
                           ),
                           SizedBox(
