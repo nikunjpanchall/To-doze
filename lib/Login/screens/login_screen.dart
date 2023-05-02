@@ -30,16 +30,14 @@ class _LoginScreenState extends State<LoginScreen> {
           child: BlocConsumer<SetUserBloc, SetUserState>(
             listener: (context, state) {
               if (state is UserStateLogin && state.isCompleted) {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/home', (route) => false);
+                Navigator.pushReplacementNamed(context, '/home');
               }
               if (state is UserStateLogin && state.hasError) {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text("${state.errorMsg}")));
               }
               if (state is UserStateSigninWithGoogle && state.isCompleted) {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/home', (route) => false);
+                Navigator.pushReplacementNamed(context, '/home');
               }
               if (state is UserStateSigninWithGoogle && state.hasError) {
                 ScaffoldMessenger.of(context)
