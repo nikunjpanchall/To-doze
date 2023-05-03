@@ -29,6 +29,19 @@ class GetTaskState extends TasksState {
   });
 }
 
+class GetCompletedTaskState extends TasksState {
+  bool isLoading;
+  bool isCompleted;
+  bool hasError;
+  List<TaskModel>? taskModel;
+  GetCompletedTaskState({
+    this.isLoading = false,
+    this.isCompleted = false,
+    this.hasError = false,
+    this.taskModel,
+  });
+}
+
 class CreateTastState extends TasksState {
   bool isLoading;
   bool isCompleted;
@@ -61,5 +74,3 @@ class UpdateTaskState extends TasksState {
     this.hasError = false,
   });
 }
-
-

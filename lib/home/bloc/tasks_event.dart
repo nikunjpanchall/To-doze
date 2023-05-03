@@ -15,6 +15,12 @@ class GetTaskEvent extends TasksEvent {
   GetTaskEvent(this.userId);
 }
 
+class GetCompletedTaskEvent extends TasksEvent {
+  final String? userId;
+
+  GetCompletedTaskEvent(this.userId);
+}
+
 class CreateTaskEvent extends TasksEvent {
   final String todo;
   final String userId;

@@ -24,20 +24,19 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.width / 30),
+        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / 30),
         child: SafeArea(
           child: BlocConsumer<SetUserBloc, SetUserState>(
             listener: (context, state) {
               if (state is UserStateLogin && state.isCompleted) {
-                Navigator.pushReplacementNamed(context, '/home');
+                Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
               }
               if (state is UserStateLogin && state.hasError) {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text("${state.errorMsg}")));
               }
               if (state is UserStateSigninWithGoogle && state.isCompleted) {
-                Navigator.pushReplacementNamed(context, '/home');
+                Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
               }
               if (state is UserStateSigninWithGoogle && state.hasError) {
                 ScaffoldMessenger.of(context)
@@ -126,11 +125,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ElevatedButton(
                           style: AppTheme.buttonStyle,
                           onPressed: () {
-                            BlocProvider.of<SetUserBloc>(context)
-                                .add(UserEventSigninWithGoogle());
+                            BlocProvider.of<SetUserBloc>(context).add(UserEventSigninWithGoogle());
                           },
-                          child: state is UserStateSigninWithGoogle &&
-                                  state.isLoading
+                          child: state is UserStateSigninWithGoogle && state.isLoading
                               ? const CircularProgressIndicator(
                                   color: Colors.white,
                                 )

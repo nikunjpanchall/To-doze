@@ -111,21 +111,30 @@ class _TaskScreenState extends State<TaskScreen> {
                                 ],
                               ),
                               child: ListTile(
-                                contentPadding: const EdgeInsets.all(10),
+                                contentPadding: const EdgeInsets.all(5),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 tileColor: Colors.grey.shade200,
-                                leading: Checkbox(
-                                  value: taskList?[index].isCompleted,
-                                  onChanged: (newValue) {
-                                    taskList?[index].isCompleted = newValue;
-                                    _updateTask(
-                                        isCompleted: taskList?[index].isCompleted ?? false,
-                                        todo: taskList?[index].todo ?? "",
-                                        id: taskList?[index].id ?? "");
-                                  },
-                                ),
+                                leading: StatefulBuilder(builder: (context, setState) {
+                                  return Checkbox(
+                                    value: taskList?[index].isCompleted,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        taskList?[index].isCompleted = newValue;
+                                      });
+                                      Future.delayed(
+                                        const Duration(milliseconds: 500),
+                                        () {
+                                          _updateTask(
+                                              isCompleted: taskList?[index].isCompleted ?? false,
+                                              todo: taskList?[index].todo ?? "",
+                                              id: taskList?[index].id ?? "");
+                                        },
+                                      );
+                                    },
+                                  );
+                                }),
                                 title: Text(
                                   "${taskList?[index].todo}",
                                   style: AppTheme.bodyText,

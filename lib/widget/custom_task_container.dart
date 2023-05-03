@@ -8,7 +8,7 @@ class CustomTaskContainer extends StatelessWidget {
     super.key,
   });
 
-  int num;
+  String num;
   String title;
 
   @override
@@ -17,8 +17,11 @@ class CustomTaskContainer extends StatelessWidget {
       width: MediaQuery.of(context).size.width / 2.3,
       height: 100,
       decoration: BoxDecoration(
+        border: Border.all(
+          width: 2,
+          color: Colors.black54,
+        ),
         borderRadius: BorderRadius.circular(12),
-        color: Colors.grey.shade300,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

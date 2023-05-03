@@ -12,6 +12,7 @@ part 'tasks_state.dart';
 class TasksBloc extends Bloc<TasksEvent, TasksState> {
   TasksBloc() : super(GetUserState()) {
     on<GetUserEvent>(_getUserData);
+    on<GetCompletedTaskEvent>(_getCompletedTaskData);
     on<GetTaskEvent>(_getTaskData);
     on<CreateTaskEvent>(_createTask);
     on<DeleteTaskEvent>(_deleteTask);
@@ -34,6 +35,16 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       emit(GetTaskState(isLoading: false, isCompleted: true, taskModel: response));
     } on FirebaseException catch (e) {
       emit(GetTaskState(hasError: true));
+    }
+  }
+
+  void _getCompletedTaskData(GetCompletedTaskEvent event, Emitter<TasksState> emit) async {
+    try {
+      emit(GetCompletedTaskState(isLoading: true));
+      final response = await TaskRepository().getCompletedTask(event.userId);
+      emit(GetCompletedTaskState(isLoading: false, isCompleted: true, taskModel: response));
+    } on FirebaseException catch (e) {
+      emit(GetCompletedTaskState(hasError: true));
     }
   }
 

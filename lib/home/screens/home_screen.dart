@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo/home/bloc/tasks_bloc.dart';
-import 'package:todo/home/models/user_model.dart';
+import 'package:todo/home/screens/completed_screen.dart';
 import 'package:todo/home/screens/profiled_screen.dart';
 import 'package:todo/home/screens/task_screen.dart';
 import 'package:todo/utils/app_theme.dart';
@@ -17,6 +15,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedindex = 0;
   List<Widget> screens = [
     const TaskScreen(),
+    const CompletedScreen(),
     const ProfiledScreen(),
   ];
 
@@ -33,8 +32,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.width / 30),
+        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / 30),
         child: SafeArea(
           child: screens[_selectedindex],
         ),
@@ -51,6 +49,10 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.list_alt_rounded),
             label: "Tasks",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.done_outline_outlined),
+            label: "Completed",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

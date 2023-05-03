@@ -20,6 +20,24 @@ class TaskRepository {
       final response = await FirebaseFirestore.instance
           .collection("tasks")
           .where("userId", isEqualTo: userId)
+          .where("isCompleted", isEqualTo: false)
+          .get();
+      response.docs.forEach((element) {
+        return taskList.add(TaskModel.fromJson(element.data()));
+      });
+      return taskList;
+    } on FirebaseException catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<TaskModel>> getCompletedTask(String? userId) async {
+    List<TaskModel>? taskList = [];
+    try {
+      final response = await FirebaseFirestore.instance
+          .collection("tasks")
+          .where("userId", isEqualTo: userId)
+          .where("isCompleted", isEqualTo: true)
           .get();
       response.docs.forEach((element) {
         return taskList.add(TaskModel.fromJson(element.data()));
