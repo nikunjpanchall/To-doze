@@ -39,3 +39,8 @@ class UpdateTaskEvent extends TasksEvent {
   final String id;
   UpdateTaskEvent({required this.isCompleted, required this.todo, required this.id});
 }
+
+class UpdateUserProfiledEvent extends TasksEvent {
+  final String imgPath;
+  UpdateUserProfiledEvent({required this.imgPath});
+}

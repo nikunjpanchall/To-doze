@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:todo/home/models/task_model.dart';
 import 'package:todo/home/models/user_model.dart';
 import 'package:todo/home/repository/task_repo.dart';
@@ -17,6 +20,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<CreateTaskEvent>(_createTask);
     on<DeleteTaskEvent>(_deleteTask);
     on<UpdateTaskEvent>(_updateTask);
+    on<UpdateUserProfiledEvent>(_updateUserProfiled);
   }
   void _getUserData(GetUserEvent event, Emitter<TasksState> emit) async {
     try {
@@ -74,7 +78,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     }
   }
 
-  Future<void> _updateTask(UpdateTaskEvent event, Emitter<TasksState> emit) async {
+  void _updateTask(UpdateTaskEvent event, Emitter<TasksState> emit) async {
     try {
       emit(UpdateTaskState(isLoading: true));
       TaskRepository().updateTask(event.isCompleted, event.todo, event.id);
@@ -84,6 +88,19 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       ));
     } catch (e) {
       emit(UpdateTaskState(hasError: true));
+    }
+  }
+
+  void _updateUserProfiled(UpdateUserProfiledEvent event, Emitter<TasksState> emit) async {
+    try {
+      emit(UpdateUserProfiledState(isLoading: true));
+      await TaskRepository().getImage(event.imgPath);
+      emit(UpdateUserProfiledState(
+        isLoading: false,
+        isCompleted: true,
+      ));
+    } catch (e) {
+      emit(UpdateUserProfiledState(hasError: true));
     }
   }
 }

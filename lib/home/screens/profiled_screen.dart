@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,17 +21,15 @@ class ProfiledScreen extends StatefulWidget {
 
 class _ProfiledScreenState extends State<ProfiledScreen> {
   UserModel? userModel;
-  List<TaskModel>? pendingtaskList = [];
-  List<TaskModel>? completedtaskList = [];
-
-  File? _image;
+  List<TaskModel>? pendingTaskList = [];
+  List<TaskModel>? completedTaskList = [];
 
   @override
   void initState() {
     // TODO: implement initState
     _getUserData();
-    _getpendingtaskData();
-    _getCompletedtaskData();
+    _getPendingTaskData();
+    _getCompletedTaskData();
     super.initState();
   }
 
@@ -38,22 +37,17 @@ class _ProfiledScreenState extends State<ProfiledScreen> {
     BlocProvider.of<TasksBloc>(context).add(GetUserEvent(Authentication.auth.currentUser?.uid));
   }
 
-  _getpendingtaskData() {
+  _getPendingTaskData() {
     BlocProvider.of<TasksBloc>(context).add(GetTaskEvent(Authentication.auth.currentUser?.uid));
   }
 
-  _getCompletedtaskData() {
+  _getCompletedTaskData() {
     BlocProvider.of<TasksBloc>(context)
         .add(GetCompletedTaskEvent(Authentication.auth.currentUser?.uid));
   }
 
-  Future getImage(ImageSource source) async {
-    final image = await ImagePicker().pickImage(source: source);
-    if (image == null) return;
-    final imageTemp = File(image.path);
-    setState(() {
-      _image = imageTemp;
-    });
+  _updateProfiled(String path) {
+    BlocProvider.of<TasksBloc>(context).add(UpdateUserProfiledEvent(imgPath: path));
   }
 
   @override
@@ -61,13 +55,16 @@ class _ProfiledScreenState extends State<ProfiledScreen> {
     return BlocConsumer<TasksBloc, TasksState>(
       listener: (context, state) {
         if (state is GetTaskState && state.isCompleted) {
-          pendingtaskList = state.taskModel;
+          pendingTaskList = state.taskModel;
         }
         if (state is GetCompletedTaskState && state.isCompleted) {
-          completedtaskList = state.taskModel;
+          completedTaskList = state.taskModel;
         }
         if (state is GetUserState && state.isCompleted) {
           userModel = state.userModel;
+        }
+        if (state is UpdateUserProfiledState && state.isCompleted) {
+          _getUserData();
         }
       },
       builder: (context, state) {
@@ -84,26 +81,31 @@ class _ProfiledScreenState extends State<ProfiledScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _image != null
-                      ? CircleAvatar(
+                  state is UpdateUserProfiledState && state.isLoading
+                      ? const CircleAvatar(
+                          radius: 40,
+                          backgroundColor: Colors.black,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      : CircleAvatar(
                           radius: 40,
                           backgroundColor: Colors.black,
                           child: ClipOval(
-                              child: Image.file(
-                            _image!,
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                          )),
-                        )
-                      : const CircleAvatar(
-                          radius: 40,
-                          backgroundColor: Colors.black,
+                            child: CachedNetworkImage(
+                              imageUrl: userModel?.profiledPhoto ?? "",
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                              errorWidget: (context, url, error) => CachedNetworkImage(
+                                  imageUrl:
+                                      "https://icon-library.com/images/my-profile-icon-png/my-profile-icon-png-3.jpg"),
+                            ),
+                          ),
                         ),
-                  SizedBox(
-                    width: AppConstants.width,
-                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -153,7 +155,14 @@ class _ProfiledScreenState extends State<ProfiledScreen> {
                                         children: [
                                           ElevatedButton.icon(
                                             style: AppTheme.buttonStyle,
-                                            onPressed: () => getImage(ImageSource.camera),
+                                            onPressed: () async {
+                                              final image = await ImagePicker()
+                                                  .pickImage(source: ImageSource.camera);
+                                              if (image != null) {
+                                                _updateProfiled(image.path);
+                                                Navigator.pop(context);
+                                              }
+                                            },
                                             icon: const Icon(Icons.camera_enhance),
                                             label: const Text("Select From Camera"),
                                           ),
@@ -162,7 +171,14 @@ class _ProfiledScreenState extends State<ProfiledScreen> {
                                           ),
                                           ElevatedButton.icon(
                                             style: AppTheme.buttonStyle,
-                                            onPressed: () => getImage(ImageSource.gallery),
+                                            onPressed: () async {
+                                              final image = await ImagePicker()
+                                                  .pickImage(source: ImageSource.gallery);
+                                              if (image != null) {
+                                                _updateProfiled(image.path);
+                                                Navigator.pop(context);
+                                              }
+                                            },
                                             icon: const Icon(Icons.upload),
                                             label: const Text("Select From Gallery"),
                                           ),
@@ -194,11 +210,11 @@ class _ProfiledScreenState extends State<ProfiledScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CustomTaskContainer(
-                  num: pendingtaskList?.length.toString() ?? "",
+                  num: pendingTaskList?.length.toString() ?? "",
                   title: 'Pending Task',
                 ),
                 CustomTaskContainer(
-                  num: completedtaskList?.length.toString() ?? "",
+                  num: completedTaskList?.length.toString() ?? "",
                   title: 'Completed Task',
                 ),
               ],

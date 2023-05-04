@@ -24,14 +24,12 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.width / 30),
+        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / 30),
         child: SafeArea(
           child: BlocConsumer<SetUserBloc, SetUserState>(
             listener: (context, state) {
               if (state is UserStateSignup && state.isCompleted) {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/', (route) => false);
+                Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
               }
               if (state is UserStateSignup && state.hasError) {
                 ScaffoldMessenger.of(context)
@@ -107,6 +105,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                       password: passwordController.text,
                                       name: nameController.text),
                                 );
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context, "/login", (route) => false);
                               }
                             },
                             child: state is UserStateSignup && state.isLoading

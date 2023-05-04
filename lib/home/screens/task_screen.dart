@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:todo/Login/auth/firebase_auth.dart';
 import 'package:todo/home/bloc/tasks_bloc.dart';
 import 'package:todo/home/models/task_model.dart';
@@ -42,6 +43,51 @@ class _TaskScreenState extends State<TaskScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Ink(
+              height: 70,
+              width: 60,
+              decoration: const ShapeDecoration(
+                color: Colors.black,
+                shape: CircleBorder(),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.add),
+                color: Colors.white,
+                onPressed: () {
+                  showBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return CustomBottomSheet(
+                        taskList: taskList,
+                        todoController: todoController,
+                        checkButtonClick: () {
+                          if (todoController.text.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text("Please Add the task"),
+                              duration: Duration(seconds: 2),
+                            ));
+                          } else {
+                            BlocProvider.of<TasksBloc>(context).add(CreateTaskEvent(
+                                todoController.text, Authentication.auth.currentUser!.uid, false));
+                            todoController.clear();
+                          }
+                          Navigator.pop(context);
+                        },
+                        cancleButtonClick: () {
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
         BlocConsumer<TasksBloc, TasksState>(
           listener: (context, state) {
             if (state is GetTaskState && state.isCompleted) {
@@ -59,8 +105,14 @@ class _TaskScreenState extends State<TaskScreen> {
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : state is GetTaskState && state.hasError
-                    ? const Text("Data Not Found")
+                : taskList!.isEmpty
+                    ? Center(
+                        child: SvgPicture.asset(
+                          "assets/svg/To do.svg",
+                          height: MediaQuery.of(context).size.height / 3,
+                          width: MediaQuery.of(context).size.width / 1,
+                        ),
+                      )
                     : ListView.builder(
                         itemCount: taskList?.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -119,6 +171,8 @@ class _TaskScreenState extends State<TaskScreen> {
                                 leading: StatefulBuilder(builder: (context, setState) {
                                   return Checkbox(
                                     value: taskList?[index].isCompleted,
+                                    activeColor: Colors.black,
+                                    checkColor: Colors.white,
                                     onChanged: (newValue) {
                                       setState(() {
                                         taskList?[index].isCompleted = newValue;
@@ -145,51 +199,6 @@ class _TaskScreenState extends State<TaskScreen> {
                         },
                       );
           },
-        ),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Ink(
-              height: 70,
-              width: 60,
-              decoration: const ShapeDecoration(
-                color: Colors.black,
-                shape: CircleBorder(),
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.add),
-                color: Colors.white,
-                onPressed: () {
-                  showBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return CustomBottomSheet(
-                        taskList: taskList,
-                        todoController: todoController,
-                        checkButtonClick: () {
-                          if (todoController.text.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                              content: Text("Please Add the task"),
-                              duration: Duration(seconds: 2),
-                            ));
-                          } else {
-                            BlocProvider.of<TasksBloc>(context).add(CreateTaskEvent(
-                                todoController.text, Authentication.auth.currentUser!.uid, false));
-                            todoController.clear();
-                          }
-                          Navigator.pop(context);
-                        },
-                        cancleButtonClick: () {
-                          Navigator.pop(context);
-                        },
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ),
         ),
       ],
     );

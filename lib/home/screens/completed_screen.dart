@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:todo/Login/auth/firebase_auth.dart';
 import 'package:todo/home/bloc/tasks_bloc.dart';
 import 'package:todo/home/models/task_model.dart';
@@ -46,37 +47,45 @@ class _CompletedScreenState extends State<CompletedScreen> {
             ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : ListView.builder(
-                itemCount: taskList?.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      tileColor: Colors.grey.shade200,
-                      leading: Checkbox(
-                        activeColor: Colors.black,
-                        checkColor: Colors.white,
-                        value: taskList?[index].isCompleted,
-                        onChanged: (newValue) {
-                          taskList?[index].isCompleted = newValue;
-                          _updateTask(
-                              isCompleted: taskList?[index].isCompleted ?? false,
-                              todo: taskList?[index].todo ?? "",
-                              id: taskList?[index].id ?? "");
-                        },
-                      ),
-                      title: Text(
-                        "${taskList?[index].todo}",
-                        style: AppTheme.bodyText,
-                      ),
+            : taskList!.isEmpty
+                ? Center(
+                    child: SvgPicture.asset(
+                      "assets/svg/completed.svg",
+                      height: MediaQuery.of(context).size.height / 3,
+                      width: MediaQuery.of(context).size.width / 1,
                     ),
+                  )
+                : ListView.builder(
+                    itemCount: taskList?.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          tileColor: Colors.grey.shade200,
+                          leading: Checkbox(
+                            activeColor: Colors.black,
+                            checkColor: Colors.white,
+                            value: taskList?[index].isCompleted,
+                            onChanged: (newValue) {
+                              taskList?[index].isCompleted = newValue;
+                              _updateTask(
+                                  isCompleted: taskList?[index].isCompleted ?? false,
+                                  todo: taskList?[index].todo ?? "",
+                                  id: taskList?[index].id ?? "");
+                            },
+                          ),
+                          title: Text(
+                            "${taskList?[index].todo}",
+                            style: AppTheme.bodyText,
+                          ),
+                        ),
+                      );
+                    },
                   );
-                },
-              );
       },
     );
   }

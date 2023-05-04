@@ -6,25 +6,16 @@ class Authentication {
   static final auth = FirebaseAuth.instance;
   static final googleSignIn = GoogleSignIn();
 
-  Future<void> SigninWithEmailAndPassword(
-      {required String email, required String password}) async {
+  Future<void> SigninWithEmailAndPassword({required String email, required String password}) async {
     await auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
   Future<void> SignupWithEmailAndPassword(
-      {String? name,
-      required String email,
-      required String password,
-      String? userId}) async {
+      {String? name, required String email, required String password, String? userId}) async {
     try {
-      await auth
-          .createUserWithEmailAndPassword(email: email, password: password)
-          .then(
-            (value) => FirebaseFirestore.instance
-                .collection("users")
-                .doc(value.user?.uid)
-                .set(
-              {"email": email, "name": name, "userId": value.user?.uid},
+      await auth.createUserWithEmailAndPassword(email: email, password: password).then(
+            (value) => FirebaseFirestore.instance.collection("users").doc(value.user?.uid).set(
+              {"email": email, "name": name, "userId": value.user?.uid, "profiledPhoto": ""},
             ),
           );
     } catch (e) {
@@ -39,20 +30,17 @@ class Authentication {
         final googleAuth = await googleAccount.authentication;
         final credential = GoogleAuthProvider.credential(
             idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
-        UserCredential userCredential =
-            await auth.signInWithCredential(credential);
+        UserCredential userCredential = await auth.signInWithCredential(credential);
         User? user = userCredential.user;
         if (user != null) {
           if (userCredential.additionalUserInfo?.isNewUser ?? true) {
             {
-              await FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(user.uid)
-                  .set(
+              await FirebaseFirestore.instance.collection("users").doc(user.uid).set(
                 {
                   "email": user.email,
                   "name": user.displayName,
-                  "userId": user.uid
+                  "userId": user.uid,
+                  "profiledPhoto": user.photoURL ?? ""
                 },
               );
             }

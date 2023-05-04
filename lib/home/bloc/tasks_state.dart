@@ -4,10 +4,10 @@ part of 'tasks_bloc.dart';
 abstract class TasksState {}
 
 class GetUserState extends TasksState {
-  bool isLoading;
-  bool isCompleted;
-  bool hasError;
-  UserModel? userModel;
+  final bool isLoading;
+  final bool isCompleted;
+  final bool hasError;
+  final UserModel? userModel;
   GetUserState({
     this.isLoading = false,
     this.isCompleted = false,
@@ -69,6 +69,17 @@ class UpdateTaskState extends TasksState {
   bool isCompleted;
   bool hasError;
   UpdateTaskState({
+    this.isLoading = false,
+    this.isCompleted = false,
+    this.hasError = false,
+  });
+}
+
+class UpdateUserProfiledState extends TasksState {
+  bool isLoading;
+  bool isCompleted;
+  bool hasError;
+  UpdateUserProfiledState({
     this.isLoading = false,
     this.isCompleted = false,
     this.hasError = false,
