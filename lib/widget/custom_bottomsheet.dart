@@ -1,63 +1,49 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:todo/home/models/task_model.dart';
-import 'package:todo/widget/custom_textfield.dart';
+import 'package:todo/utils/app_theme.dart';
+
+import '../utils/app_constants.dart';
 
 class CustomBottomSheet extends StatelessWidget {
-  const CustomBottomSheet({
-    super.key,
-    required this.taskList,
-    required this.todoController,
-    required this.checkButtonClick,
-    required this.cancleButtonClick,
-  });
+  const CustomBottomSheet(
+      {super.key, required this.taskList, required this.todoController, required this.buttonClick});
 
   final List<TaskModel>? taskList;
   final TextEditingController todoController;
-  final Function() checkButtonClick;
-  final Function() cancleButtonClick;
+  final Function() buttonClick;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(30),
-          topLeft: Radius.circular(30),
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              controller: todoController,
+              style: AppTheme.subtitleText.copyWith(fontSize: 30),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: "What Do You Need To-do?",
+                hintStyle: AppTheme.subtitleText.copyWith(fontSize: 30),
+              ),
+            ),
+            SizedBox(
+              height: AppConstants.height,
+            ),
+            ElevatedButton(
+              style: AppTheme.buttonStyle,
+              onPressed: buttonClick,
+              child: const Text("Add New Task"),
+            ),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.grey, //New
-              blurRadius: 25.0,
-              offset: Offset(0, 5))
-        ],
-        color: Colors.white,
-      ),
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                onPressed: cancleButtonClick,
-                icon: const Icon(Icons.close),
-              ),
-              const Text("Add New Task"),
-              IconButton(
-                onPressed: checkButtonClick,
-                icon: const Icon(Icons.check),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          CustomTextField(controller: todoController, labletxt: "New Task", obscure: false),
-          const SizedBox(
-            height: 10,
-          ),
-        ],
       ),
     );
   }

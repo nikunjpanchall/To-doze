@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,8 +17,21 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late Stream<User?> authState;
+
+  @override
+  void initState() {
+    authState = FirebaseAuth.instance.authStateChanges();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +46,24 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData(),
-        initialRoute: '/home',
+        home: StreamBuilder(
+          stream: authState,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return const HomePage();
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('${snapshot.error}'),
+              );
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return const LoginScreen();
+          },
+        ),
         routes: {
-          '/': (context) => const LoginScreen(),
+          '/login': (context) => const LoginScreen(),
           '/home': (context) => const HomePage(),
           '/signup': (context) => const SignupScreen(),
         },

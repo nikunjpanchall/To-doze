@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:todo/Login/auth/firebase_auth.dart';
 import 'package:todo/home/bloc/tasks_bloc.dart';
 import 'package:todo/home/models/task_model.dart';
@@ -57,83 +60,127 @@ class _TaskScreenState extends State<TaskScreen> {
           builder: (context, state) {
             return state is GetTaskState && state.isLoading
                 ? const Center(
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(
+                      color: Colors.black,
+                    ),
                   )
-                : state is GetTaskState && state.hasError
-                    ? const Text("Data Not Found")
-                    : ListView.builder(
-                        itemCount: taskList?.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10.0),
-                            child: Slidable(
-                              endActionPane: ActionPane(
-                                motion: const ScrollMotion(),
-                                children: [
-                                  SlidableAction(
-                                    flex: 1,
-                                    onPressed: (value) {
-                                      showBottomSheet(
-                                        context: context,
-                                        builder: (context) {
-                                          return CustomBottomSheet(
-                                            taskList: taskList,
-                                            todoController: todoController,
-                                            checkButtonClick: () {
-                                              _updateTask(
-                                                  isCompleted:
-                                                      taskList?[index].isCompleted ?? false,
-                                                  todo: todoController.text,
-                                                  id: taskList?[index].id ?? "");
-                                              Navigator.pop(context);
+                : taskList!.isEmpty
+                    ? Center(
+                        child: SvgPicture.asset(
+                          "assets/svg/To do.svg",
+                          height: MediaQuery.of(context).size.height / 3,
+                          width: MediaQuery.of(context).size.width / 1,
+                        ),
+                      )
+                    : AnimationLimiter(
+                        child: ListView.builder(
+                          physics:
+                              const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                          itemCount: taskList?.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return AnimationConfiguration.staggeredList(
+                              position: index,
+                              duration: const Duration(milliseconds: 100),
+                              child: ScaleAnimation(
+                                duration: const Duration(milliseconds: 2500),
+                                curve: Curves.fastLinearToSlowEaseIn,
+                                child: FlipAnimation(
+                                  duration: const Duration(milliseconds: 1000),
+                                  curve: Curves.fastLinearToSlowEaseIn,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 5.0),
+                                    child: Slidable(
+                                      endActionPane: ActionPane(
+                                        motion: const ScrollMotion(),
+                                        children: [
+                                          SlidableAction(
+                                            flex: 1,
+                                            onPressed: (value) {
+                                              showBottomSheet(
+                                                context: context,
+                                                builder: (context) {
+                                                  return CustomBottomSheet(
+                                                    taskList: taskList,
+                                                    todoController: todoController,
+                                                    buttonClick: () {
+                                                      _updateTask(
+                                                          isCompleted:
+                                                              taskList?[index].isCompleted ?? false,
+                                                          todo: todoController.text,
+                                                          id: taskList?[index].id ?? "");
+                                                      Navigator.pop(context);
+                                                    },
+                                                  );
+                                                },
+                                              );
                                             },
-                                            cancleButtonClick: () {
-                                              Navigator.pop(context);
+                                            backgroundColor: Colors.grey.shade900,
+                                            foregroundColor: Colors.white,
+                                            borderRadius: BorderRadius.circular(12),
+                                            icon: Icons.edit,
+                                            label: 'Edit',
+                                          ),
+                                          const SizedBox(
+                                            width: 2,
+                                          ),
+                                          SlidableAction(
+                                            onPressed: (value) {
+                                              _deleteTask(taskList?[index].id ?? "");
                                             },
-                                          );
-                                        },
-                                      );
-                                    },
-                                    backgroundColor: const Color(0xFF7BC043),
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.edit,
-                                    label: 'Edit',
+                                            backgroundColor: Colors.grey.shade900,
+                                            foregroundColor: Colors.white,
+                                            icon: Icons.delete,
+                                            borderRadius: BorderRadius.circular(12),
+                                            label: 'Delete',
+                                          ),
+                                        ],
+                                      ),
+                                      child: Card(
+                                        elevation: 5,
+                                        color: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: ListTile(
+                                          contentPadding: const EdgeInsets.all(5),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          leading: StatefulBuilder(builder: (context, setState) {
+                                            return Checkbox(
+                                              value: taskList?[index].isCompleted,
+                                              activeColor: Colors.black,
+                                              checkColor: Colors.white,
+                                              onChanged: (newValue) {
+                                                setState(() {
+                                                  taskList?[index].isCompleted = newValue;
+                                                });
+                                                Future.delayed(
+                                                  const Duration(milliseconds: 500),
+                                                  () {
+                                                    _updateTask(
+                                                        isCompleted:
+                                                            taskList?[index].isCompleted ?? false,
+                                                        todo: taskList?[index].todo ?? "",
+                                                        id: taskList?[index].id ?? "");
+                                                  },
+                                                );
+                                              },
+                                            );
+                                          }),
+                                          title: Text(
+                                            "${taskList?[index].todo}",
+                                            style: AppTheme.bodyText,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                  SlidableAction(
-                                    onPressed: (value) {
-                                      _deleteTask(taskList?[index].id ?? "");
-                                    },
-                                    backgroundColor: Colors.redAccent,
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.delete,
-                                    label: 'Delete',
-                                  ),
-                                ],
-                              ),
-                              child: ListTile(
-                                contentPadding: const EdgeInsets.all(10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                tileColor: Colors.grey.shade200,
-                                leading: Checkbox(
-                                  value: taskList?[index].isCompleted,
-                                  onChanged: (newValue) {
-                                    taskList?[index].isCompleted = newValue;
-                                    _updateTask(
-                                        isCompleted: taskList?[index].isCompleted ?? false,
-                                        todo: taskList?[index].todo ?? "",
-                                        id: taskList?[index].id ?? "");
-                                  },
-                                ),
-                                title: Text(
-                                  "${taskList?[index].todo}",
-                                  style: AppTheme.bodyText,
                                 ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       );
           },
         ),
@@ -152,13 +199,14 @@ class _TaskScreenState extends State<TaskScreen> {
                 icon: const Icon(Icons.add),
                 color: Colors.white,
                 onPressed: () {
-                  showBottomSheet(
+                  showModalBottomSheet(
                     context: context,
+                    backgroundColor: Colors.transparent,
                     builder: (context) {
                       return CustomBottomSheet(
                         taskList: taskList,
                         todoController: todoController,
-                        checkButtonClick: () {
+                        buttonClick: () {
                           if (todoController.text.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                               content: Text("Please Add the task"),
@@ -169,9 +217,6 @@ class _TaskScreenState extends State<TaskScreen> {
                                 todoController.text, Authentication.auth.currentUser!.uid, false));
                             todoController.clear();
                           }
-                          Navigator.pop(context);
-                        },
-                        cancleButtonClick: () {
                           Navigator.pop(context);
                         },
                       );
