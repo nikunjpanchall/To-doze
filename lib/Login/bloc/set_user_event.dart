@@ -9,26 +9,25 @@ class UserEventLogout extends SetUserEvent {
   List<Object?> get pros => throw UnimplementedError();
 }
 
-class UserEventSigninWithGoogle extends SetUserEvent {
-  UserEventSigninWithGoogle();
+class UserEventSignInWithGoogle extends SetUserEvent {
+  UserEventSignInWithGoogle();
 
   List<Object?> get pros => throw UnimplementedError();
 }
 
 class UserEventLogIn extends SetUserEvent {
-  final email;
-  final password;
+  final String email;
+  final String password;
   UserEventLogIn({required this.email, required this.password});
 
   List<Object?> get pros => throw UnimplementedError();
 }
 
 class UserEventRegister extends SetUserEvent {
-  String name;
-  String email;
-  String password;
-  UserEventRegister(
-      {required this.name, required this.email, required this.password});
+  final String name;
+  final String email;
+  final String password;
+  UserEventRegister({required this.name, required this.email, required this.password});
 
   List<Object?> get pros => throw UnimplementedError();
 }

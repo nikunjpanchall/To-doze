@@ -4,17 +4,18 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class Authentication {
   static final auth = FirebaseAuth.instance;
+  final ref = FirebaseFirestore.instance;
   static final googleSignIn = GoogleSignIn();
 
-  Future<void> SigninWithEmailAndPassword({required String email, required String password}) async {
+  Future<void> signInWithEmailAndPassword({required String email, required String password}) async {
     await auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
-  Future<void> SignupWithEmailAndPassword(
+  Future<void> signUpWithEmailAndPassword(
       {String? name, required String email, required String password, String? userId}) async {
     try {
       await auth.createUserWithEmailAndPassword(email: email, password: password).then(
-            (value) => FirebaseFirestore.instance.collection("users").doc(value.user?.uid).set(
+            (value) => ref.collection("users").doc(value.user?.uid).set(
               {"email": email, "name": name, "userId": value.user?.uid, "profiledPhoto": ""},
             ),
           );
@@ -23,7 +24,7 @@ class Authentication {
     }
   }
 
-  Future<GoogleSignInAccount?> SigninWithGoogle() async {
+  Future<GoogleSignInAccount?> signInWithGoogle() async {
     try {
       final googleAccount = await googleSignIn.signIn();
       if (googleAccount != null) {
@@ -35,7 +36,7 @@ class Authentication {
         if (user != null) {
           if (userCredential.additionalUserInfo?.isNewUser ?? true) {
             {
-              await FirebaseFirestore.instance.collection("users").doc(user.uid).set(
+              await ref.collection("users").doc(user.uid).set(
                 {
                   "email": user.email,
                   "name": user.displayName,
@@ -51,9 +52,10 @@ class Authentication {
     } catch (e) {
       rethrow;
     }
+    return null;
   }
 
-  Future<void> SignOut() async {
+  Future<void> signOut() async {
     await auth.signOut();
     await googleSignIn.signOut();
   }

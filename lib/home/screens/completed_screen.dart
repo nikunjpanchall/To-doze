@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:todo/Login/auth/firebase_auth.dart';
 import 'package:todo/home/bloc/tasks_bloc.dart';
@@ -45,7 +46,9 @@ class _CompletedScreenState extends State<CompletedScreen> {
       builder: (context, state) {
         return state is GetCompletedTaskState && state.isLoading
             ? const Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  color: Colors.black,
+                ),
               )
             : taskList!.isEmpty
                 ? Center(
@@ -55,36 +58,56 @@ class _CompletedScreenState extends State<CompletedScreen> {
                       width: MediaQuery.of(context).size.width / 1,
                     ),
                   )
-                : ListView.builder(
-                    itemCount: taskList?.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                : AnimationLimiter(
+                    child: ListView.builder(
+                      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                      itemCount: taskList?.length,
+                      itemBuilder: (context, index) {
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 100),
+                          child: ScaleAnimation(
+                            duration: const Duration(milliseconds: 2500),
+                            curve: Curves.fastLinearToSlowEaseIn,
+                            child: FadeInAnimation(
+                              duration: const Duration(milliseconds: 1000),
+                              curve: Curves.fastLinearToSlowEaseIn,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                                child: Card(
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                  color: Colors.white,
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.all(5),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    leading: Checkbox(
+                                      activeColor: Colors.black,
+                                      checkColor: Colors.white,
+                                      value: taskList?[index].isCompleted,
+                                      onChanged: (newValue) {
+                                        taskList?[index].isCompleted = newValue;
+                                        _updateTask(
+                                            isCompleted: taskList?[index].isCompleted ?? false,
+                                            todo: taskList?[index].todo ?? "",
+                                            id: taskList?[index].id ?? "");
+                                      },
+                                    ),
+                                    title: Text(
+                                      "${taskList?[index].todo}",
+                                      style: AppTheme.bodyText,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
-                          tileColor: Colors.grey.shade200,
-                          leading: Checkbox(
-                            activeColor: Colors.black,
-                            checkColor: Colors.white,
-                            value: taskList?[index].isCompleted,
-                            onChanged: (newValue) {
-                              taskList?[index].isCompleted = newValue;
-                              _updateTask(
-                                  isCompleted: taskList?[index].isCompleted ?? false,
-                                  todo: taskList?[index].todo ?? "",
-                                  id: taskList?[index].id ?? "");
-                            },
-                          ),
-                          title: Text(
-                            "${taskList?[index].todo}",
-                            style: AppTheme.bodyText,
-                          ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   );
       },
     );

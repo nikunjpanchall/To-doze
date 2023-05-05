@@ -37,28 +37,53 @@ class _HomePageState extends State<HomePage> {
           child: screens[_selectedindex],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.black,
-        onTap: (i) {
-          setState(() {
-            _selectedindex = i;
-          });
-        },
-        currentIndex: _selectedindex,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt_rounded),
-            label: "Tasks",
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+                color: Colors.grey, //New
+                blurRadius: 25.0,
+                offset: Offset(0, 5))
+          ],
+        ),
+        height: 70,
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(40),
+            topRight: Radius.circular(40),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.done_outline_outlined),
-            label: "Completed",
+          child: BottomNavigationBar(
+            elevation: 10,
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.white,
+            iconSize: 20.0,
+            selectedIconTheme: const IconThemeData(size: 28.0),
+            selectedItemColor: Colors.black,
+            unselectedItemColor: Colors.black,
+            selectedFontSize: 16.0,
+            unselectedFontSize: 12,
+            onTap: (i) {
+              setState(() {
+                _selectedindex = i;
+              });
+            },
+            currentIndex: _selectedindex,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.list_alt_rounded),
+                label: "Tasks",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.done_outline_outlined),
+                label: "Completed",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: "Profile",
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -110,7 +110,7 @@ class _ProfiledScreenState extends State<ProfiledScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Hello ${userModel?.name}",
+                        "Hello ${userModel?.name ?? ""}",
                         style: AppTheme.subtitleText,
                       ),
                       const SizedBox(height: 5),
@@ -225,8 +225,8 @@ class _ProfiledScreenState extends State<ProfiledScreen> {
             ElevatedButton(
                 style: AppTheme.buttonStyle,
                 onPressed: () {
-                  Authentication().SignOut();
-                  Navigator.pushNamedAndRemoveUntil(context, '/logout', (route) => false);
+                  Authentication().signOut();
+                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
                 },
                 child: const Text("Logout")),
           ],
